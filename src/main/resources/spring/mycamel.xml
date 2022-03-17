@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <bean id="ResponseProcessor" class="com.example.parentProject.ResponseProcessor" />
+    <bean id="FinalResponseProcessor" class="com.example.parentProject.FinalResponseProcessor" />
+    <bean id="sampleException" class="java.lang.IllegalArgumentException">
+        <constructor-arg index="0" value="This is sampleException exception"/>
+    </bean>
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+
+       <!-- <route>
+            <from uri="timer://foo?repeatCount=1"/>
+            <log message="Spring Boot says {{hello}} to me"/>
+        </route>-->
+        <onException>
+            <exception>java.lang.IllegalArgumentException</exception>
+            <handled><constant>true</constant></handled>
+            <log message="Caught exception now routing to exception handler"/>
+            <to uri="direct:errorRoute"/>
+        </onException>
+
+        <restConfiguration bindingMode="off" component="undertow" host="localhost" port="8081"/>
+
+        <rest path="/myApi">
+            <get uri="/hello1">
+                <to uri="direct:hello"/>
+            </get>
+            <get uri="/hello2">
+                <to uri="direct:bye"/>
+            </get>
+            <!-- <post uri="/hello3">
+                 <to uri="mock:update"/>
+             </post>-->
+        </rest>
+
+        <route>
+            <from uri="direct:hello"/>
+            <removeHeaders pattern="CamelHttp*"/>
+                <!--<log message="Spring Boot says {{routing1}} to me"/>-->
+            <log message="Spring Boot says routing1 to me"/>
+            <to uri="http://localhost:8085/api/child1"/>
+                <log message="after calling api1"/>
+            <process ref="ResponseProcessor"/>
+                <log message="after processing response"/>
+            <setBody><constant>postcallTest</constant></setBody>
+            <to uri="http://localhost:8085/api/child2"/>
+                <log message="after calling api2"/>
+            <process ref="FinalResponseProcessor"/>
+                <log message="after processing final response"/>
+        </route>
+        <route>
+            <from uri="direct:bye"/>
+            <!--<log message="Spring Boot says {{routing2}} to me"/>-->
+            <log message="Spring Boot says routing2 to me"/>
+            <throwException exceptionType="java.lang.IllegalArgumentException" message="illegal argument found"/>
+            <!--<throwException exceptionType="java.lang.NullPointerException" message="illegal argument found"/>-->
+            <log message="After throw exception-should not print"/>
+        </route>
+
+        <route id="errorRoute">
+            <from uri="direct:errorRoute"/>
+            <log message="Reached error route"/>
+            <process ref="ErrorResponseProcessor"/>
+        </route>
+
+    </camelContext>
+
+</beans>
