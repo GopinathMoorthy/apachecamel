@@ -5,6 +5,7 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
+    <bean id="InitProcessor" class="com.example.parentProject.InitProcessor" />
     <bean id="ResponseProcessor" class="com.example.parentProject.ResponseProcessor" />
     <bean id="FinalResponseProcessor" class="com.example.parentProject.FinalResponseProcessor" />
     <bean id="ErrorResponseProcessor" class="com.example.parentProject.ErrorResponseProcessor" />
@@ -19,7 +20,7 @@
         </route>-->
         <onException>
             <exception>java.lang.IllegalArgumentException</exception>
-            <handled><constant>true</constant></handled>
+            <!--<handled><constant>true</constant></handled>-->
             <log message="Caught exception now routing to exception handler"/>
             <to uri="direct:errorRoute"/>
         </onException>
@@ -33,15 +34,17 @@
             <get uri="/hello2">
                 <to uri="direct:bye"/>
             </get>
-            <!-- <post uri="/hello3">
-                 <to uri="mock:update"/>
-             </post>-->
+            <get uri="/exceptionExample">
+                 <to uri="direct:exceptionExample"/>
+             </get>
         </rest>
 
         <route>
             <from uri="direct:hello"/>
             <removeHeaders pattern="CamelHttp*"/>
                 <!--<log message="Spring Boot says {{routing1}} to me"/>-->
+            <process ref="InitProcessor"/>
+            <log message="after Init process "/>
             <log message="Spring Boot says routing1 to me"/>
             <to uri="http://localhost:8085/api/child1"/>
                 <log message="after calling api1"/>
@@ -61,6 +64,15 @@
             <!--<throwException exceptionType="java.lang.NullPointerException" message="illegal argument found"/>-->
             <log message="After throw exception-should not print"/>
         </route>
+
+        <route>
+            <from uri="direct:exceptionExample"/>
+            <log message="Inside exceptionExample route"/>
+            <to uri="http://localhost:8085/api/child3"/>
+           <!-- todo:catch the exception thrown and send it in the response-->
+            <log message="after calling api3"/>
+        </route>
+
 
         <route id="errorRoute">
             <from uri="direct:errorRoute"/>
