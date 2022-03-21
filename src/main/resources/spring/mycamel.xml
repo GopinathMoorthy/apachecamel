@@ -13,9 +13,12 @@
         <constructor-arg index="0" value="This is sampleException exception"/>
     </bean>
     <bean id="PojoResponseProcessor" class="com.example.parentProject.PojoResponseProcessor" />
+
     <bean id="CustomerDetails" class="com.example.parentProject.dto.CustomerDetails" />
     <camelContext xmlns="http://camel.apache.org/schema/spring">
-
+        <dataFormats>
+            <json id="CustomerDetails1" library="Jackson" unmarshalTypeName="com.example.parentProject.dto.CustomerDetails" />
+        </dataFormats>
        <!-- <route>
             <from uri="timer://foo?repeatCount=1"/>
             <log message="Spring Boot says {{hello}} to me"/>
@@ -85,6 +88,9 @@
             <removeHeaders pattern="CamelHttp*"/>
             <log message="Inside pojoHandler route"/>
             <to uri="http://localhost:8085/api/child4"/>
+            <unmarshal>
+                <custom ref="CustomerDetails1"></custom>
+            </unmarshal>
             <process ref="PojoResponseProcessor"/>
             <log message="after calling api4"/>
         </route>

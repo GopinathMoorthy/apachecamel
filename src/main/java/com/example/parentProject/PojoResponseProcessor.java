@@ -1,5 +1,6 @@
 package com.example.parentProject;
 
+import com.example.parentProject.dto.CustomerDetails;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
