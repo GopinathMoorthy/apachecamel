@@ -4,30 +4,30 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomerDetails {
-    private String customerName;
-    private String location;
+    private String responseCode;
+    private String responseData;
 
-    public String getCustomerName() {
-        return customerName;
+    public String getResponseCode() {
+        return responseCode;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 
-    public String getLocation() {
-        return location;
+    public String getResponseData() {
+        return responseData;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setResponseData(String responseData) {
+        this.responseData = responseData;
     }
 
     @Override
     public String toString() {
         return "CustomerDetails{" +
-                "customerName='" + customerName + '\'' +
-                ", location='" + location + '\'' +
+                "responseCode='" + responseCode + '\'' +
+                ", responseData='" + responseData + '\'' +
                 '}';
     }
 }
