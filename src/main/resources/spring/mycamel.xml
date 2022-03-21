@@ -12,6 +12,8 @@
     <bean id="sampleException" class="java.lang.IllegalArgumentException">
         <constructor-arg index="0" value="This is sampleException exception"/>
     </bean>
+    <bean id="PojoResponseProcessor" class="com.example.parentProject.PojoResponseProcessor" />
+    <bean id="CustomerDetails" class="com.example.parentProject.dto.CustomerDetails" />
     <camelContext xmlns="http://camel.apache.org/schema/spring">
 
        <!-- <route>
@@ -20,7 +22,8 @@
         </route>-->
         <onException>
             <exception>java.lang.IllegalArgumentException</exception>
-            <!--<handled><constant>true</constant></handled>-->
+            <exception>java.io.IOException</exception>
+<!--            <handled><constant>true</constant></handled>-->
             <log message="Caught exception now routing to exception handler"/>
             <to uri="direct:errorRoute"/>
         </onException>
@@ -37,6 +40,9 @@
             <get uri="/exceptionExample">
                  <to uri="direct:exceptionExample"/>
              </get>
+            <get uri="/pojoHandler">
+                <to uri="direct:pojoHandler"/>
+            </get>
         </rest>
 
         <route>
@@ -67,10 +73,20 @@
 
         <route>
             <from uri="direct:exceptionExample"/>
+            <removeHeaders pattern="CamelHttp*"/>
             <log message="Inside exceptionExample route"/>
             <to uri="http://localhost:8085/api/child3"/>
            <!-- todo:catch the exception thrown and send it in the response-->
             <log message="after calling api3"/>
+        </route>
+
+        <route>
+            <from uri="direct:pojoHandler"/>
+            <removeHeaders pattern="CamelHttp*"/>
+            <log message="Inside pojoHandler route"/>
+            <to uri="http://localhost:8085/api/child4"/>
+            <process ref="PojoResponseProcessor"/>
+            <log message="after calling api4"/>
         </route>
 
 

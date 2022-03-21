@@ -14,6 +14,6 @@ public class FinalResponseProcessor implements Processor {
         System.out.println(exchange.getIn().getBody(String.class));
         Map<String,String> responseMap= (Map<String, String>) exchange.getProperty("exchangeMap");
         System.out.println(responseMap.get("firstResponse"));
-
+        exchange.getMessage().setBody(responseMap.get("firstResponse"));
     }
 }

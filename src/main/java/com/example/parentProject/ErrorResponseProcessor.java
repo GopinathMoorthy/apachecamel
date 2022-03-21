@@ -8,9 +8,11 @@ public class ErrorResponseProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         System.out.println("Inside ErrorResponseProcessor");
-        System.out.println(exchange.getIn().getBody(String.class));
         //exchange.set.setBody("Hello " + body);
         // copy headers from IN to OUT to propagate them
-        exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+        exchange.getMessage().setHeaders(exchange.getIn().getHeaders());
+        String response=exchange.getIn().getBody(String.class);
+        System.out.println(response);
+        exchange.getMessage().setBody(response);
     }
 }
