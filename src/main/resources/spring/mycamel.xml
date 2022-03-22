@@ -79,7 +79,10 @@
             <removeHeaders pattern="CamelHttp*"/>
             <log message="Inside exceptionExample route"/>
             <to uri="http://localhost:8085/api/child3"/>
-           <!-- todo:catch the exception thrown and send it in the response-->
+            <unmarshal>
+                <custom ref="CustomerDetails1"></custom>
+            </unmarshal>
+            <process ref="PojoResponseProcessor"/>
             <log message="after calling api3"/>
         </route>
 

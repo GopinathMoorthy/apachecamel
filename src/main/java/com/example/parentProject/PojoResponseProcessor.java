@@ -15,8 +15,19 @@ public class PojoResponseProcessor implements Processor {
         System.out.println("Inside PojoResponseProcessor");
         CustomerDetails customerDetails = exchange.getIn().getBody(CustomerDetails.class);
         Map<String,Object> headerMap = new HashMap<>();
-        headerMap.put(Exchange.HTTP_RESPONSE_CODE,customerDetails.getResponseCode());
-        exchange.getMessage().setHeaders(headerMap);
-        exchange.getMessage().setBody(customerDetails.getResponseData());
+        if(customerDetails.getResponseCode().equals("200")) {
+            headerMap.put(Exchange.HTTP_RESPONSE_CODE, customerDetails.getResponseCode());
+            exchange.getMessage().setHeaders(headerMap);
+            exchange.getMessage().setBody(customerDetails.getResponseData());
+        }else
+        {
+            if(customerDetails.getResponseCode().equals("503")){
+                headerMap.put(Exchange.HTTP_RESPONSE_CODE, "500");
+                exchange.getMessage().setHeaders(headerMap);
+                exchange.getMessage().setBody("Internal error in the child");
+            }
+
+        }
+
     }
 }
